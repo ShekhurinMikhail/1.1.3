@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
+    private final Connection connection = Util.getConnectionWithDb();
     public UserDaoJDBCImpl() {
 
     }
@@ -20,56 +21,20 @@ public class UserDaoJDBCImpl implements UserDao {
                 "`Age` TINYINT NULL," +
                 "PRIMARY KEY (`id`)," +
                 "UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)";
-        Connection connection = Util.getConnectionWithDb();
-        Statement statement = null;
-            try {
-                statement = connection.createStatement();
+            try (Statement statement = connection.createStatement()) {
                 statement.executeUpdate(sql);
             } catch (SQLException e) {
                 e.printStackTrace();
-            } finally {
-                if (statement != null) {
-                    try {
-                        statement.close();
-                    } catch(SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
-                if (connection != null) {
-                    try {
-                        connection.close();
-                    } catch(SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
             }
         System.out.println("Create complete");
     }
 
     public void dropUsersTable() {
         String sql = "DROP TABLE IF EXISTS `schema`.`users`";
-        Connection connection = Util.getConnectionWithDb();
-        Statement statement = null;
-        try {
-            statement = connection.createStatement();
+        try (Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch(SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch(SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         System.out.println("Drop complete");
     }
@@ -78,11 +43,7 @@ public class UserDaoJDBCImpl implements UserDao {
         String sql = "INSERT INTO `schema`.`users` " +
                 "(Name, LastName, Age) " +
                 "VALUES(?, ?, ?)";
-        Connection connection = Util.getConnectionWithDb();
-        PreparedStatement preparedStatement = null;
-        try {
-            preparedStatement = connection.prepareStatement(sql);
-
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, lastName);
             preparedStatement.setByte(3, age);
@@ -90,62 +51,25 @@ public class UserDaoJDBCImpl implements UserDao {
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            if (preparedStatement != null) {
-                try {
-                    preparedStatement.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         System.out.println("Save complete");
     }
 
     public void removeUserById(long id) {
-        String sql = "DELETE FROM schema.users WHERE id=?";
-        Connection connection = Util.getConnectionWithDb();
-        PreparedStatement preparedStatement = null;
-
-        try {
-            preparedStatement = connection.prepareStatement(sql);
+        String sql = "DELETE FROM `schema`.`users` WHERE id=?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            if (preparedStatement != null) {
-                try {
-                    preparedStatement.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         System.out.println("DeleteById complete");
     }
 
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
-        String sql = "SELECT * FROM schema.users";
-        Connection connection = Util.getConnectionWithDb();
-        Statement statement = null;
-        try {
-            statement = connection.createStatement();
+        String sql = "SELECT * FROM `schema`.`users`";
+        try (Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(sql);
             while (resultSet.next()) {
                 User user = new User();
@@ -157,50 +81,17 @@ public class UserDaoJDBCImpl implements UserDao {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         System.out.println("getUserList complete");
         return userList;
     }
 
     public void cleanUsersTable() {
-        String sql = "TRUNCATE TABLE schema.users";
-        Connection connection = Util.getConnectionWithDb();
-        Statement statement = null;
-        try {
-            statement = connection.createStatement();
+        String sql = "TRUNCATE TABLE `schema`.`users`";
+        try (Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         System.out.println("Clean complete");
     }

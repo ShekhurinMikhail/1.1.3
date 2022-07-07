@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
+    private final SessionFactory sessionFactory = Util.getSessionFactory();
     public UserDaoHibernateImpl() {
 
     }
@@ -25,46 +26,26 @@ public class UserDaoHibernateImpl implements UserDao {
                 "`Age` TINYINT NULL," +
                 "PRIMARY KEY (`id`)," +
                 "UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)";
-        SessionFactory sessionFactory = Util.getSessionFactory();
-        Session session = null;
-        try {
-            session = sessionFactory.openSession();
+        try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             NativeQuery sqlQuery = session.createSQLQuery(sql);
             sqlQuery.executeUpdate();
             session.getTransaction().commit();
         } catch (HibernateException e) {
             e.printStackTrace();
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-            if (sessionFactory != null) {
-                sessionFactory.close();
-            }
         }
     }
 
     @Override
     public void dropUsersTable() {
         String sql = "DROP TABLE IF EXISTS `schema`.`users`";
-        SessionFactory sessionFactory = Util.getSessionFactory();
-        Session session = null;
-        try {
-            session = sessionFactory.openSession();
+        try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             NativeQuery sqlQuery = session.createSQLQuery(sql);
             sqlQuery.executeUpdate();
             session.getTransaction().commit();
         } catch (HibernateException e) {
             e.printStackTrace();
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-            if (sessionFactory != null) {
-                sessionFactory.close();
-            }
         }
     }
 
@@ -73,10 +54,7 @@ public class UserDaoHibernateImpl implements UserDao {
         String sql = "INSERT INTO `schema`.`users` " +
                 "(Name, LastName, Age) " +
                 "VALUES(?, ?, ?)";
-        SessionFactory sessionFactory = Util.getSessionFactory();
-        Session session = null;
-        try {
-            session = sessionFactory.openSession();
+        try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             NativeQuery sqlQuery = session.createSQLQuery(sql);
             sqlQuery.setParameter(1, name);
@@ -86,23 +64,13 @@ public class UserDaoHibernateImpl implements UserDao {
             session.getTransaction().commit();
         } catch (HibernateException e) {
             e.printStackTrace();
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-            if (sessionFactory != null) {
-                sessionFactory.close();
-            }
         }
     }
 
     @Override
     public void removeUserById(long id) {
-        String sql = "DELETE FROM schema.users WHERE id=:id";
-        SessionFactory sessionFactory = Util.getSessionFactory();
-        Session session = null;
-        try {
-            session = sessionFactory.openSession();
+        String sql = "DELETE FROM `schema`.`users` WHERE id=:id";
+        try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             NativeQuery sqlQuery = session.createSQLQuery(sql);
             sqlQuery.setParameter("id", id);
@@ -110,24 +78,14 @@ public class UserDaoHibernateImpl implements UserDao {
             session.getTransaction().commit();
         } catch (HibernateException e) {
             e.printStackTrace();
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-            if (sessionFactory != null) {
-                sessionFactory.close();
-            }
         }
     }
 
     @Override
     public List<User> getAllUsers() {
         List<User> listUser = new ArrayList<>();
-        String sql = "SELECT Name, lastName, Age FROM schema.users";
-        SessionFactory sessionFactory = Util.getSessionFactory();
-        Session session = null;
-        try {
-            session = sessionFactory.openSession();
+        String sql = "SELECT Name, lastName, Age FROM `schema`.`users`";
+        try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             List<Object[]> resultList = session.createNativeQuery(sql).getResultList();
             for (Object[] object : resultList) {
@@ -137,37 +95,20 @@ public class UserDaoHibernateImpl implements UserDao {
             session.getTransaction().commit();
         } catch (HibernateException e) {
             e.printStackTrace();
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-            if (sessionFactory != null) {
-                sessionFactory.close();
-            }
         }
         return listUser;
     }
 
     @Override
     public void cleanUsersTable() {
-        String sql = "TRUNCATE TABLE schema.users";
-        SessionFactory sessionFactory = Util.getSessionFactory();
-        Session session = null;
-        try {
-            session = sessionFactory.openSession();
+        String sql = "TRUNCATE TABLE `schema`.`users`";
+        try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             NativeQuery sqlQuery = session.createSQLQuery(sql);
             sqlQuery.executeUpdate();
             session.getTransaction().commit();
         } catch (HibernateException e) {
             e.printStackTrace();
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-            if (sessionFactory != null) {
-                sessionFactory.close();
-            }
         }
     }
 }

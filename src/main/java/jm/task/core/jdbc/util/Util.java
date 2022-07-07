@@ -24,6 +24,16 @@ public class Util {
         return connection;
     }
 
+    public static void close() {
+        try {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static SessionFactory getSessionFactory() {
         try {
             Properties prop = new Properties();
